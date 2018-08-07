@@ -94,17 +94,42 @@
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
+  var rejected = [];
+    _.each(collection, function(item) {
+      if (!test(item)){
+	      rejected.push(item);
+      }
+    });
+  return rejected;
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+    var noDupes = [];
+    _.each(array, function(item){
+      if(_.indexOf(noDupes, item) === -1) {
+        noDupes.push(item);
+      }
+    });
+    return noDupes;
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
+    var mapper = [];
+        if (Array.isArray(collection)){
+      for (var i = 0; i < collection.length; i++){
+        mapper.push(iterator(collection[i], i, collection));
+
+      } }else {
+        for (var i in collection) {
+  iterator(collection[i], i, collection);
+  }
+      }
+return mapper;
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
@@ -149,6 +174,12 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
+    var output = accumulator  || 0;
+   _.each(collection, function(item) {
+      output = iterator(output, item);
+   });
+    
+    return output;
   };
 
   // Determine if the array or object contains a given value (using `===`).
