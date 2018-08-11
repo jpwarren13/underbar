@@ -40,7 +40,7 @@
   _.last = function(array, n) {
     if (n === 0){
       return [];
-    } else if ( n=== undefined || n > 0 && n <= array.length){
+    } else if (n=== undefined || n > 0 && n <= array.length){
     return n === undefined ? array[array.length-1] : array.slice(n-1, array.length);
     } else if(n>array.length-1) {
     return array;
@@ -105,30 +105,55 @@
     // copying code in and modifying it
   };
 
-  // Produce a duplicate-free version of the array.
+_.uniq = function(array, isSorted, iterator) {
+  var iteratedArray = [];
+  var noDupes = [];
+  
+  if(iterator === undefined){
+    for(var i = 0; i < array.length; i ++){
+      if(_.indexOf(noDupes, array[i]) === -1){
+        noDupes.push(array[i]);
+      }
+    } 
+  } else {
+    for(i = 0; i < array.length; i ++){
+      iteratedArray.push(iterator(array[i]));
+      if(_.indexOf(noDupes, iteratedArray[i]) === -1 && iteratedArray[i] !== undefined){
+        //iteratedArray.push(iterator(array[i]));
+        noDupes.push(iteratedArray[i]);
+      }
+    }
+  }
+  
+  return noDupes;
+  };
+
+  /*
   _.uniq = function(array, isSorted, iterator) {
     var noDupes = [];
     _.each(array, function(item){
-      if(_.indexOf(noDupes, item) === -1) {
+      if(_.indexOf(noDupes, item) === -1 && iterator !== undefined) {
+        noDupes.push(iterator(item));
+      } else if (_.indexOf(noDupes, item) === -1 && iterator === undefined){
         noDupes.push(item);
       }
     });
     return noDupes;
   };
-
+*/
 
   // Return the results of applying an iterator to each element.
   _.map = function(collection, iterator) {
     var mapper = [];
-        if (Array.isArray(collection)){
+    if (Array.isArray(collection)){
       for (var i = 0; i < collection.length; i++){
         mapper.push(iterator(collection[i], i, collection));
-
-      } }else {
+      } 
+    } else {
         for (var i in collection) {
-  iterator(collection[i], i, collection);
-  }
-      }
+          iterator(collection[i], i, collection);
+        }
+    }
 return mapper;
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
@@ -173,25 +198,21 @@ return mapper;
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  _.reduce = function(collection, iterator, accumulator) {
-    var output = accumulator  || 0;
-   _.each(collection, function(item) {
-      output = iterator(output, item);
-   });
-    
-    return output;
-  };
 
-  // Determine if the array or object contains a given value (using `===`).
-  _.contains = function(collection, target) {
-    // TIP: Many iteration problems can be most easily expressed in
-    // terms of reduce(). Here's a freebie to demonstrate!
-    return _.reduce(collection, function(wasFound, item) {
-      if (wasFound) {
-        return true;
+    _.reduce = function(collection, iterator, accumulator) {
+
+    if (arguments.length === 2) {
+      accumulator = collection[0];
+      for (var i = 1; i < collection.length; i++){
+        accumulator = iterator(accumulator, collection[i]);
       }
-      return item === target;
-    }, false);
+    } else {
+    _.each(collection, function(item, key, collection) {
+      accumulator  = iterator(accumulator, item);
+    });
+  }
+    return accumulator;
+
   };
 
 

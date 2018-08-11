@@ -343,10 +343,13 @@
       });
 
       it('should handle iterators that work with a sorted array', function() {
-        var iterator = function(value) { return value === 1; };
+         var iterator = function(value) { if (value === 1 || value ===2 ){
+          return value; 
+        }
+        };
         var numbers = [1, 2, 2, 3, 4, 4];
-
-        expect(_.uniq(FILL_ME_IN)).to.eql([1, 2]);
+        //console.log(numbers.forEach(iterator));
+        expect(_.uniq(numbers, true, iterator)).to.eql([1, 2]);
       });
 
       it('should produce a brand new array instead of modifying the input array', function() {
