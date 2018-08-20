@@ -214,18 +214,44 @@ return mapper;
     return accumulator;
 
   };
+  // Determine if the array or object contains a given value (using `===`).
+  _.contains = function(collection, target) {
+    // TIP: Many iteration problems can be most easily expressed in
+    // terms of reduce(). Here's a freebie to demonstrate!
+    return _.reduce(collection, function(wasFound, item) {
+      if (wasFound) {
+        return true;
+      }
+      return item === target;
+    }, false);
+  };
 
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+var iterator = iterator || _.identity;
+  for (var i = 0; i < collection.length; i++){
+    if (!iterator(collection[i])){
+        return false;
+    }
+  } return true;
+
     // TIP: Try re-using reduce() here.
   };
-
+///////////////////////////////////////////////////////////////////////////////////
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    var iterator = iterator || _.identity;
+    for (var i = 0; i < collection.length; i++){
+      if (iterator(collection[i])){
+        return true;
+      }
+    }
+    return false;
+    };
     // TIP: There's a very clever way to re-use every() here.
-  };
+  ///////////////////////////////////////////////////////////////////////////////////
 
 
   /**
@@ -234,7 +260,7 @@ return mapper;
    *
    * In this section, we'll look at a couple of helpers for merging objects.
    */
-
+/*
   // Extend a given object with all the properties of the passed in
   // object(s).
   //
@@ -246,13 +272,30 @@ return mapper;
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
+  */
   _.extend = function(obj) {
+    //var cloned = Object.assign({}, obj);
+    for (var i = 1; i < arguments.length;i++){
+    obj = Object.assign(obj, arguments[i]);  
+    }
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+       var keys = [];
+       for (var i = 1; i < arguments.length; i++){
+          keys = Object.keys(arguments[i]);
+          for (var j = 0; j < keys.length; j++){
+            if (obj[keys[j]] === undefined){
+              obj[keys[j]]  = arguments[i][keys[j]];
+            }
+          }
+  }
+    return obj;
   };
+  
 
 
   /**
@@ -294,8 +337,19 @@ return mapper;
   // _.memoize should return a function that, when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
+
   _.memoize = function(func) {
+    var cachedResults = {};
+    return function () {
+      var args = Array.prototype.slice.call(arguments);
+      //args.shift();
+      if(cachedResults[args] === undefined) {
+        cachedResults[args] = func(...args); 
+      }
+      return cachedResults[args];
+    };
   };
+
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -304,7 +358,17 @@ return mapper;
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    //args = arguments.slice(2, arguments.length);
+    //var argPass = arguments[0];
+   // for (var i = 3; i < arguments.length; i++){
+     // argPass = argPass +', ' + arguments[i];
+    //}
+    //clock.tick(wait+1);
+    //setTimeout(function() {}, wait*10);
+    var functionArguments = Array.prototype.slice.call(arguments, 2);
+    setTimeout(func, wait, ...functionArguments);
   };
+
 
 
   /**
@@ -318,6 +382,15 @@ return mapper;
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var copy = array.slice(0);
+    var placeHolder = null;
+    for(var i = copy.length-1; i > 0; i--){
+      var newIndex = Math.floor(Math.random() * (i+1));
+      placeHolder = copy[newIndex];
+      copy[newIndex] = copy[i];
+      copy[i] = placeHolder;
+    }
+    return copy;
   };
 
 
@@ -332,6 +405,11 @@ return mapper;
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    var returnCollection = [];
+    for (var i = 0; i < collection.length; i++){
+      returnCollection.push(functionOrKey.apply(null, collection[i]));
+    }
+    return returnCollection;
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -347,6 +425,16 @@ return mapper;
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var zip = [];  
+    var zipArray = [];
+    for (var i=0; i < arguments[0].length; i++){
+      for (var j= 0; j < arguments.length; j++){
+        zip = [];
+        zip.push(arguments[j][i]);
+      }
+      zipArray.push(zip);
+    }
+    return zipArray;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -354,6 +442,16 @@ return mapper;
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var flattenedArray = []
+    for ( var i = 0; i < nestedArray.length; i++){
+  
+      for (var j = 0; j < nestedArray[i].length; j++){
+        if (Array.isArray(nestedArray[i])){
+        flattenedArray.push(nestedArray[i][j]);
+    }
+     } 
+    }
+      return flattenedArray;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
