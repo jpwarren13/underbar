@@ -338,15 +338,15 @@ var iterator = iterator || _.identity;
   // already computed the result for the given argument and return that value
   // instead if possible.
 
-  _.memoize = function(func) {
+    _.memoize = function(func) {
     var cachedResults = {};
-    return function () {
-      var args = Array.prototype.slice.call(arguments);
-      //args.shift();
-      if(cachedResults[args] === undefined) {
-        cachedResults[args] = func(...args); 
+    return function() {
+      var argsString = JSON.stringify(arguments);
+      if (cachedResults[argsString] === undefined){
+        return cachedResults[argsString] = func(...arguments);
+      } else {
+        return cachedResults[argsString];
       }
-      return cachedResults[args];
     };
   };
 
